@@ -1,4 +1,9 @@
+mod character;
+mod sim;
+
+use character::CharacterBannerSim;
 use clap::{crate_name, crate_version, Arg, Command};
+use sim::BannerSim;
 
 fn main() {
     let matches = Command::new(crate_name!())
@@ -31,25 +36,16 @@ fn main() {
 
     let iterations = *matches.get_one::<usize>("ITERATIONS").unwrap();
 
+    let mut sim = CharacterBannerSim::default();
     for run_i in 0..iterations {
-        for wish_count in 1..=90 {
-            if is_5s_char_win(wish_count) {
-                println!("Run {}: Won on wish {}", run_i + 1, wish_count);
-                break;
-            }
+        let mut wish_count: u8 = 1;
+        while !sim.wish() {
+            wish_count += 1;
         }
+        println!(
+            "Run {}: Won limited 5* character on wish {}",
+            run_i + 1,
+            wish_count
+        );
     }
-}
-
-/// Determine if a roll won a 5* character.  This does not mean that the win is for the limited 5*.
-fn is_5s_char_win(wish_count: u64) -> bool {
-    let pct_win = if wish_count < 74 {
-        0.006
-    } else {
-        // this is slightly >1 for wish 90, but that's ok because the RNG will not generate
-        // a value greater than 1
-        0.006 + 0.0585 * ((wish_count - 73) as f64)
-    };
-
-    fastrand::f64() < pct_win
 }
