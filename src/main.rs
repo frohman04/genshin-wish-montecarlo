@@ -2,9 +2,8 @@ mod character;
 mod sim;
 mod weapon;
 
-use crate::character::CharacterBannerSim;
-use crate::sim::BannerSim;
-use crate::weapon::WeaponBannerSim;
+use crate::character::CharacterBannerSimParams;
+use crate::weapon::WeaponBannerSimParams;
 use clap::{crate_name, crate_version, Arg, Command};
 
 fn main() {
@@ -38,7 +37,7 @@ fn main() {
 
     let iterations = *matches.get_one::<usize>("ITERATIONS").unwrap();
 
-    let mut sim = CharacterBannerSim::default();
+    let mut sim = CharacterBannerSimParams::new_sim();
     for run_i in 0..iterations {
         let mut wish_count: u8 = 1;
         while !sim.wish() {
@@ -51,7 +50,7 @@ fn main() {
         );
     }
 
-    let mut sim = WeaponBannerSim::default();
+    let mut sim = WeaponBannerSimParams::new_sim();
     for run_i in 0..iterations {
         let mut wish_count: u8 = 1;
         while !sim.wish() {
