@@ -21,7 +21,14 @@ fn main() {
         )
         .get_matches();
 
-    fastrand::seed(400);
+    match matches.get_one::<u64>("seed") {
+        Some(seed) => {
+            fastrand::seed(*seed);
+            println!("Using seed {}", seed)
+        }
+        None => println!("Using random seed {}", fastrand::get_seed()),
+    }
+
     for run in 0..*matches.get_one::<usize>("ITERATIONS").unwrap() {
         for wish_count in 1..=90 {
             let pct_win = if wish_count < 74 {
