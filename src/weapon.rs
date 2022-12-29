@@ -1,34 +1,34 @@
 use crate::sim;
 
 #[derive(Default)]
-pub struct CharacterBannerSim {
+pub struct WeaponBannerSim {
     /// The number of wishes made against the current banner since the last 5* win.
     wish_count: u8,
     /// The number of 5* wins against the current banner since the last limited win.
     win_count: u8,
 }
 
-impl CharacterBannerSim {
+impl WeaponBannerSim {
     /// Determine if a roll won a 5* character.  This does not mean that the win is for the
     /// limited 5*.
     fn is_win(wish_count: u8) -> bool {
-        sim::is_win(wish_count, 74, 0.006, 0.0585)
+        sim::is_win(wish_count, 63, 0.007, 0.0552)
     }
 
     fn is_limited_win(win_count: u8) -> bool {
-        // if win_count == 1, lost the 50/50 first time, this win is guaranteed
-        // if fastrand::bool(), won the 50/50
-        // else, lost the 50/50
-        win_count == 1 || fastrand::bool()
+        // if win_count == 2, lost both 75/25s and have 2 epitomized path points, guaranteeing win
+        // if fastrand::f64 < 0.375, won the 75/25 with 0 or 1 epitomized path points
+        // else, lost the 75/25 with 0 or 1 epitomized path points
+        win_count == 2 || fastrand::f64() < 0.375
     }
 }
 
-impl sim::BannerSim for CharacterBannerSim {
+impl sim::BannerSim for WeaponBannerSim {
     fn wish(&mut self) -> bool {
         self.wish_count += 1;
-        if CharacterBannerSim::is_win(self.wish_count) {
+        if WeaponBannerSim::is_win(self.wish_count) {
             self.wish_count = 0;
-            if CharacterBannerSim::is_limited_win(self.win_count) {
+            if WeaponBannerSim::is_limited_win(self.win_count) {
                 self.win_count = 0;
                 true
             } else {

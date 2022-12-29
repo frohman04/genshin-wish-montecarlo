@@ -1,9 +1,11 @@
 mod character;
 mod sim;
+mod weapon;
 
-use character::CharacterBannerSim;
+use crate::character::CharacterBannerSim;
+use crate::sim::BannerSim;
+use crate::weapon::WeaponBannerSim;
 use clap::{crate_name, crate_version, Arg, Command};
-use sim::BannerSim;
 
 fn main() {
     let matches = Command::new(crate_name!())
@@ -44,6 +46,19 @@ fn main() {
         }
         println!(
             "Run {}: Won limited 5* character on wish {}",
+            run_i + 1,
+            wish_count
+        );
+    }
+
+    let mut sim = WeaponBannerSim::default();
+    for run_i in 0..iterations {
+        let mut wish_count: u8 = 1;
+        while !sim.wish() {
+            wish_count += 1;
+        }
+        println!(
+            "Run {}: Won limited 5* weapon on wish {}",
             run_i + 1,
             wish_count
         );
