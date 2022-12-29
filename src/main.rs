@@ -29,20 +29,27 @@ fn main() {
         None => println!("Using random seed {}", fastrand::get_seed()),
     }
 
-    for run in 0..*matches.get_one::<usize>("ITERATIONS").unwrap() {
-        for wish_count in 1..=90 {
-            let pct_win = if wish_count < 74 {
-                0.006
-            } else {
-                // this is slightly >1 for wish 90, but that's ok because the RNG will not generate
-                // a value greater than 1
-                0.006 + 0.0585 * ((wish_count - 73) as f64)
-            };
+    let iterations = *matches.get_one::<usize>("ITERATIONS").unwrap();
 
-            if fastrand::f64() < pct_win {
-                println!("Run {}: Won on wish {}", run + 1, wish_count);
+    for run_i in 0..iterations {
+        for wish_count in 1..=90 {
+            if is_5s_char_win(wish_count) {
+                println!("Run {}: Won on wish {}", run_i + 1, wish_count);
                 break;
             }
         }
     }
+}
+
+/// Determine if a roll won a 5* character.  This does not mean that the win is for the limited 5*.
+fn is_5s_char_win(wish_count: u64) -> bool {
+    let pct_win = if wish_count < 74 {
+        0.006
+    } else {
+        // this is slightly >1 for wish 90, but that's ok because the RNG will not generate
+        // a value greater than 1
+        0.006 + 0.0585 * ((wish_count - 73) as f64)
+    };
+
+    fastrand::f64() < pct_win
 }
