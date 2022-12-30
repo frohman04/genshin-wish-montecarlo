@@ -11,8 +11,8 @@ impl WeaponBannerSimParams {
 }
 
 impl sim::SimParams for WeaponBannerSimParams {
-    fn get_win_params(&self) -> (u8, f64, f64) {
-        (63, 0.007, 0.0552)
+    fn get_win_params(&self) -> (u8, u8, f64, f64) {
+        (63, 80 * 3, 0.007, 0.0552)
     }
 
     fn is_limited_win(&self, win_count: u8) -> bool {

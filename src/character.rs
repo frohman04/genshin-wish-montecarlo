@@ -11,8 +11,8 @@ impl CharacterBannerSimParams {
 }
 
 impl sim::SimParams for CharacterBannerSimParams {
-    fn get_win_params(&self) -> (u8, f64, f64) {
-        (74, 0.006, 0.0585)
+    fn get_win_params(&self) -> (u8, u8, f64, f64) {
+        (74, 90 * 2, 0.006, 0.0585)
     }
 
     fn is_limited_win(&self, win_count: u8) -> bool {

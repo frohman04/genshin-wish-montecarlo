@@ -1,6 +1,7 @@
 pub trait SimParams {
-    /// Get the (soft_pity, base_win_pct, incr_win_pct) for the banner.
-    fn get_win_params(&self) -> (u8, f64, f64);
+    /// Get the (soft_pity, max_pity, base_win_pct, incr_win_pct) for the banner.  max_pity is the
+    /// most wishes that are required to get the desired limited 5* item.
+    fn get_win_params(&self) -> (u8, u8, f64, f64);
 
     /// Determine if a 5* win resulted in the desired limited 5* item.
     fn is_limited_win(&self, win_count: u8) -> bool;
@@ -10,6 +11,7 @@ pub struct BannerSim {
     /// The parameters to use when running the simulation
     params: Box<dyn SimParams>,
     soft_pity: u8,
+    max_pity: u8,
     base_win_pct: f64,
     incr_win_pct: f64,
     /// The number of wishes made against the current banner since the last 5* win.
@@ -20,10 +22,11 @@ pub struct BannerSim {
 
 impl BannerSim {
     pub fn new(params: Box<dyn SimParams>) -> BannerSim {
-        let (soft_pity, base_win_pct, incr_win_pct) = params.get_win_params();
+        let (soft_pity, hard_pity, base_win_pct, incr_win_pct) = params.get_win_params();
         BannerSim {
             params,
             soft_pity,
+            max_pity: hard_pity,
             base_win_pct,
             incr_win_pct,
             wish_count: 0,
@@ -51,6 +54,10 @@ impl BannerSim {
         } else {
             false
         }
+    }
+
+    pub fn get_max_pity(&self) -> u8 {
+        self.max_pity
     }
 
     /// Determine if a given wish is a winner.  Wishes prior to soft_pity (exclusive) will win at

@@ -43,6 +43,14 @@ fn main() {
                 .conflicts_with("character")
                 .help("Run simulations on the weapon banner"),
         )
+        .arg(
+            Arg::new("bucket-size")
+                .short('b')
+                .long("bucket-size")
+                .num_args(1)
+                .value_parser(clap::value_parser!(u8))
+                .help("If specified, bucket results into buckets of the specified size"),
+        )
         .get_matches();
 
     match matches.get_one::<u64>("seed") {
@@ -67,11 +75,38 @@ fn main() {
         .exit();
     };
 
-    for _run_i in 0..iterations {
-        let mut wish_count: u8 = 1;
-        while !sim.wish() {
-            wish_count += 1;
+    if let Some(bucket_size) = matches.get_one::<u8>("bucket-size") {
+        let max_pity = sim.get_max_pity();
+
+        let num_buckets = max_pity as f64 / *bucket_size as f64;
+        if num_buckets.round() != num_buckets {
+            clap::Error::raw(
+                ErrorKind::InvalidValue,
+                format!("--bucket-size must be an integral divisor of {}", max_pity),
+            )
+            .exit();
         }
-        println!("{}", wish_count);
+
+        let mut buckets = vec![0; num_buckets as usize];
+
+        for _run_i in 0..iterations {
+            let mut wish_count: u8 = 1;
+            while !sim.wish() {
+                wish_count += 1;
+            }
+            buckets[(wish_count as f64 / *bucket_size as f64).floor() as usize] += 1;
+        }
+
+        for (i, count) in buckets.iter().enumerate() {
+            println!("{},{}", (i + 1) * *bucket_size as usize, count);
+        }
+    } else {
+        for _run_i in 0..iterations {
+            let mut wish_count: u8 = 1;
+            while !sim.wish() {
+                wish_count += 1;
+            }
+            println!("{}", wish_count);
+        }
     }
 }
