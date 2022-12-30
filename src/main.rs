@@ -97,8 +97,14 @@ fn main() {
             buckets[(wish_count as f64 / *bucket_size as f64).floor() as usize] += 1;
         }
 
+        println!("min_wishes,max_wishes,num_limited_wins");
         for (i, count) in buckets.iter().enumerate() {
-            println!("{},{}", (i + 1) * *bucket_size as usize, count);
+            println!(
+                "{},{},{}",
+                i * *bucket_size as usize,
+                (i + 1) * *bucket_size as usize,
+                count
+            );
         }
     } else {
         for _run_i in 0..iterations {
